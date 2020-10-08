@@ -1,0 +1,17 @@
+{
+  "name": "Elixir VS Code Remote Container",
+  "dockerComposeFile": "../docker/docker-compose.yml",
+  "service": "todo",
+  "settings": {
+    "terminal.integrated.shell.linux": "/bin/zsh"
+  },
+  "extensions": [
+    "jakebecker.elixir-ls",
+    "saratravi.elixir-formatter",
+    "benvp.vscode-hex-pm-intellisense"
+  ],
+  "forwardPorts": [4000],
+  "workspaceFolder": "/workspace",
+  "shutdownAction": "stopCompose",
+  "postCreateCommand": "mix do deps.get, deps.compile"
+}
