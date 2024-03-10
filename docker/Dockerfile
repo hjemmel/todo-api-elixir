@@ -1,4 +1,4 @@
-FROM elixir:1.10 as elixir
+FROM elixir:1.16 as elixir
 
 ARG TODO_DB_HOSTNAME
 ENV TODO_DB_HOSTNAME=$TODO_DB_HOSTNAME
