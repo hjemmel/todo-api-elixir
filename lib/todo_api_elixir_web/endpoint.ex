@@ -7,12 +7,13 @@ defmodule TodoApiElixirWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_todo_api_elixir_key",
-    signing_salt: "1JZm57/y"
+    signing_salt: "vHkrE/eZ",
+    same_site: "Lax"
   ]
 
-  socket "/socket", TodoApiElixirWeb.UserSocket,
-    websocket: true,
-    longpoll: false
+  # socket "/live", Phoenix.LiveView.Socket,
+  #   websocket: [connect_info: [session: @session_options]],
+  #   longpoll: [connect_info: [session: @session_options]]
 
   # Serve at "/" the static files from "priv/static" directory.
   #
@@ -22,11 +23,13 @@ defmodule TodoApiElixirWeb.Endpoint do
     at: "/",
     from: :todo_api_elixir,
     gzip: false,
-    only: ~w(css fonts images js favicon.ico robots.txt)
+    only: TodoApiElixirWeb.static_paths()
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.
   if code_reloading? do
+    socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
+    plug Phoenix.LiveReloader
     plug Phoenix.CodeReloader
     plug Phoenix.Ecto.CheckRepoStatus, otp_app: :todo_api_elixir
   end
@@ -42,6 +45,5 @@ defmodule TodoApiElixirWeb.Endpoint do
   plug Plug.MethodOverride
   plug Plug.Head
   plug Plug.Session, @session_options
-  plug CORSPlug
   plug TodoApiElixirWeb.Router
 end

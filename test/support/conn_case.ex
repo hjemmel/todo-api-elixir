@@ -19,25 +19,20 @@ defmodule TodoApiElixirWeb.ConnCase do
 
   using do
     quote do
+      # The default endpoint for testing
+      @endpoint TodoApiElixirWeb.Endpoint
+
+      use TodoApiElixirWeb, :verified_routes
+
       # Import conveniences for testing with connections
       import Plug.Conn
       import Phoenix.ConnTest
       import TodoApiElixirWeb.ConnCase
-
-      alias TodoApiElixirWeb.Router.Helpers, as: Routes
-
-      # The default endpoint for testing
-      @endpoint TodoApiElixirWeb.Endpoint
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(TodoApiElixir.Repo)
-
-    unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(TodoApiElixir.Repo, {:shared, self()})
-    end
-
+    TodoApiElixir.DataCase.setup_sandbox(tags)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 end

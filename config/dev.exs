@@ -1,11 +1,12 @@
-use Mix.Config
+import Config
 
 # Configure your database
 config :todo_api_elixir, TodoApiElixir.Repo,
   username: "postgres",
   password: "postgres",
+  hostname: "localhost",
   database: "todo_api_elixir_dev",
-  hostname: System.get_env("TODO_DB_HOSTNAME") || "localhost",
+  stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
@@ -13,14 +14,20 @@ config :todo_api_elixir, TodoApiElixir.Repo,
 # debugging and code reloading.
 #
 # The watchers configuration can be used to run external
-# watchers to your application. For example, we use it
-# with webpack to recompile .js and .css sources.
+# watchers to your application. For example, we can use it
+# to bundle .js and .css sources.
 config :todo_api_elixir, TodoApiElixirWeb.Endpoint,
-  http: [port: 4000],
-  debug_errors: true,
-  code_reloader: true,
+  # Binding to loopback ipv4 address prevents access from other machines.
+  # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
+  http: [ip: {127, 0, 0, 1}, port: 4000],
   check_origin: false,
-  watchers: []
+  code_reloader: true,
+  debug_errors: true,
+  secret_key_base: "427Vjmm8v9L14PKh9VpijF2tf0KG0I+T0QOK5dhymOqMmnqCcMAb6KeGbHxDFGOu",
+  watchers: [
+    esbuild: {Esbuild, :install_and_run, [:todo_api_elixir, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:todo_api_elixir, ~w(--watch)]}
+  ]
 
 # ## SSL Support
 #
@@ -30,7 +37,6 @@ config :todo_api_elixir, TodoApiElixirWeb.Endpoint,
 #
 #     mix phx.gen.cert
 #
-# Note that this task requires Erlang/OTP 20 or later.
 # Run `mix help phx.gen.cert` for more information.
 #
 # The `http:` config above can be replaced with:
@@ -46,6 +52,18 @@ config :todo_api_elixir, TodoApiElixirWeb.Endpoint,
 # configured to run both http and https servers on
 # different ports.
 
+# Watch static and templates for browser reloading.
+config :todo_api_elixir, TodoApiElixirWeb.Endpoint,
+  live_reload: [
+    patterns: [
+      ~r"priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"lib/todo_api_elixir_web/(controllers|live|components)/.*(ex|heex)$"
+    ]
+  ]
+
+# Enable dev routes for dashboard and mailbox
+config :todo_api_elixir, dev_routes: true
+
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "[$level] $message\n"
 
@@ -55,3 +73,9 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
+
+config :phoenix_live_view,
+  # Include HEEx debug annotations as HTML comments in rendered markup
+  debug_heex_annotations: true,
+  # Enable helpful, but potentially expensive runtime checks
+  enable_expensive_runtime_checks: true
